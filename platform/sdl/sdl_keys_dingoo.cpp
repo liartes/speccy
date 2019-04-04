@@ -89,11 +89,11 @@ namespace xPlatform
 				OpQuit(true);
 			return 'k';
 
-		case DINGOO_BUTTON_L:
+		case DINGOO_BUTTON_R:
 			l_shift = _flags&KF_DOWN;
 			if(!ui_focused)
 			{
-#ifdef GCWZERO //redefine L as save state
+#ifdef GCWZERO //redefine R as save state
 	                        using namespace xOptions;
 	                        eOptionB* o = eOptionB::Find("save state");
 	                        SAFE_CALL(o)->Change();
@@ -102,7 +102,7 @@ namespace xPlatform
 #endif//GCWZERO
         	        }
 			break;
-		case DINGOO_BUTTON_R:
+		case DINGOO_BUTTON_L:
 			r_shift = _flags&KF_DOWN;
 			if(!ui_focused)
 	                {
