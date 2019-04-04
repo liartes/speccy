@@ -1,0 +1,6 @@
+title=ZX Spectrum
+description=Speccy Emulator
+exec=/home/retrofw/emus/speccy/speccy.dge
+selectordir=/home/retrofw/roms/zxspectrum
+selectorfilter=.trd,.scl,.z80,.tzx
+clock=600
