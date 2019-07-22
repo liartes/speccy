@@ -70,7 +70,7 @@ $(BIN_TARGET): $(CXX_OBJS) $(C_OBJS)
 	$(CXX) $(LFLAGS) $^ -o$(BIN_TARGET)
 
 opk: $(BIN_TARGET) $(DESKTOP_ENTRY) $(ICON)
-	mksquashfs $^ $(SRC_PATH)/res $@ -noappend -no-exports -no-xattrs -all-root
+	mksquashfs $^ $(SRC_PATH)/res speccy/speccy.$@ -noappend -no-exports -no-xattrs -all-root
 
 ipk: $(BIN_TARGET)
 	@rm -rf /tmp/.speccy-ipk/ && mkdir -p /tmp/.speccy-ipk/root/home/retrofw/emus/speccy /tmp/.speccy-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators /tmp/.speccy-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators.systems
@@ -78,7 +78,7 @@ ipk: $(BIN_TARGET)
 	@cp speccy/speccy.lnk /tmp/.speccy-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators
 	@cp speccy/zxspectrum.speccy.lnk /tmp/.speccy-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators.systems
 	@sed "s/^Version:.*/Version: $$(date +%Y%m%d)/" speccy/control > /tmp/.speccy-ipk/control
-	@cp speccy/conffiles /tmp/.speccy-ipk/
+	@cp speccy/conffiles speccy/postinst /tmp/.speccy-ipk/
 	@tar --owner=0 --group=0 -czvf /tmp/.speccy-ipk/control.tar.gz -C /tmp/.speccy-ipk/ control conffiles
 	@tar --owner=0 --group=0 -czvf /tmp/.speccy-ipk/data.tar.gz -C /tmp/.speccy-ipk/root/ .
 	@echo 2.0 > /tmp/.speccy-ipk/debian-binary
