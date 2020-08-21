@@ -54,7 +54,7 @@ void eKeyboard::Init()
 {
 	background = COLOR_BACKGROUND;
 	eRect r_dlg(ePoint(169, 70));
-        if(gcw_fullscreen)
+    if(gcw_fullscreen)
 	{
 		r_dlg.Move(ePoint(143-24, 24));
 	}

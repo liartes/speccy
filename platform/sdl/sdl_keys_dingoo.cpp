@@ -44,22 +44,22 @@ namespace xPlatform
 
 	static bool l_shift = false, r_shift = false, b_select = false, b_start = false;
 
-#ifdef GCWZERO//map A-stick to movement
-	static byte TranslateJoy(Uint8 _key2, dword& _flags)
-	{
-	        switch(_key2)
-	        {
-	        case 1:         return 'u';
-	        case 2:   	return 'd';
-	        case 3:   	return 'l';
-	        case 4:  	return 'r';
+// #ifdef GCWZERO//map A-stick to movement
+// 	static byte TranslateJoy(Uint8 _key2, dword& _flags)
+// 	{
+// 	        switch(_key2)
+// 	        {
+// 	        case 1:     return 'u';
+// 	        case 2:   	return 'd';
+// 	        case 3:   	return 'l';
+// 	        case 4:  	return 'r';
 	
-	        default:
-	                break;
-	        }
-		return 0;
-	}
-#endif//GCWZERO
+// 	        default:
+// 	                break;
+// 	        }
+// 		return 0;
+// 	}
+// #endif//GCWZERO
 
 
 	static byte TranslateKey(SDLKey _key, dword& _flags)
@@ -76,7 +76,7 @@ namespace xPlatform
 		case DINGOO_BUTTON_B:		return 'e';
 		case DINGOO_BUTTON_X:		return '1';
 		case DINGOO_BUTTON_Y:		return ' ';
-	
+
 		case DINGOO_BUTTON_POWER:
 		case DINGOO_BUTTON_SELECT:
 			b_select = _flags&KF_DOWN;
@@ -93,28 +93,28 @@ namespace xPlatform
 			l_shift = _flags&KF_DOWN;
 			if(!ui_focused)
 			{
-#ifdef GCWZERO //redefine R as save state
+				#ifdef GCWZERO //redefine R as save state
 	                        using namespace xOptions;
 	                        eOptionB* o = eOptionB::Find("save state");
 	                        SAFE_CALL(o)->Change();
-#else
+				#else
 				Handler()->OnAction(A_RESET);
-#endif//GCWZERO
+				#endif//GCWZERO
         	        }
 			break;
 		case DINGOO_BUTTON_L:
 			r_shift = _flags&KF_DOWN;
 			if(!ui_focused)
-	                {
-#ifdef GCWZERO
+            {
+				#ifdef GCWZERO //redefine L as load state
 	                        using namespace xOptions;
 	                        eOptionB* o = eOptionB::Find("load state");
 	                        SAFE_CALL(o)->Change();
-#else
+				#else
 				xOptions::eOption<int>* op_sound = xOptions::eOption<int>::Find("sound");
 				SAFE_CALL(op_sound)->Change();
-#endif//GCWZERO
-        	        }
+				#endif//GCWZERO
+	        }
 			break;
 
 		default:
@@ -155,102 +155,102 @@ namespace xPlatform
 			break;
 		}
 	}
-#ifdef GCWZERO//A-stick code, mostly ripped from the wiki ;)
-	void ProcessJoy(SDL_Event& e)
-	{
-		int JOY_DEADZONE=1000;
-        	switch(e.type)
-		{
-			case SDL_JOYAXISMOTION:			
-			switch(e.jaxis.axis)
-			{
-				case 0:		// axis 0 (left-right)
-				if(e.jaxis.value < -JOY_DEADZONE)
-				{
-					dword flags = KF_DOWN|OpJoyKeyFlags();
-					if(l_shift)
-						flags |= KF_SHIFT;
-					if(r_shift)
-						flags |= KF_ALT;
-					byte key = TranslateJoy(3, flags);
-					Handler()->OnKey(key, flags);
-				}
-				else if(e.jaxis.value > JOY_DEADZONE)
-				{
-					dword flags = KF_DOWN|OpJoyKeyFlags();
-					if(l_shift)
-						flags |= KF_SHIFT;
-					if(r_shift)
-						flags |= KF_ALT;
-					byte key = TranslateJoy(4, flags);
-					Handler()->OnKey(key, flags);
-				} else //A-stick within deadzone (centred)
-	                	{
-        	        	        dword flags = 0;
-        	        	        if(l_shift)
-        	        	                flags |= KF_SHIFT;
-        	        	        if(r_shift)
-        	        	                flags |= KF_ALT;
-        	        	        byte key = TranslateJoy(3, flags);
-        	        	        byte key2 = TranslateJoy(4, flags);
-        	        	        Handler()->OnKey(key, OpJoyKeyFlags());
-        	        	        Handler()->OnKey(key2, OpJoyKeyFlags());
-        	        	}
+// #ifdef GCWZERO//A-stick code, mostly ripped from the wiki ;)
+// 	void ProcessJoy(SDL_Event& e)
+// 	{
+// 		int JOY_DEADZONE=1000;
+//         	switch(e.type)
+// 		{
+// 			case SDL_JOYAXISMOTION:			
+// 			switch(e.jaxis.axis)
+// 			{
+// 				case 0:		// axis 0 (left-right)
+// 				if(e.jaxis.value < -JOY_DEADZONE)
+// 				{
+// 					dword flags = KF_DOWN|OpJoyKeyFlags();
+// 					if(l_shift)
+// 						flags |= KF_SHIFT;
+// 					if(r_shift)
+// 						flags |= KF_ALT;
+// 					byte key = TranslateJoy(3, flags);
+// 					Handler()->OnKey(key, flags);
+// 				}
+// 				else if(e.jaxis.value > JOY_DEADZONE)
+// 				{
+// 					dword flags = KF_DOWN|OpJoyKeyFlags();
+// 					if(l_shift)
+// 						flags |= KF_SHIFT;
+// 					if(r_shift)
+// 						flags |= KF_ALT;
+// 					byte key = TranslateJoy(4, flags);
+// 					Handler()->OnKey(key, flags);
+// 				} else //A-stick within deadzone (centred)
+// 	                	{
+//         	        	        dword flags = 0;
+//         	        	        if(l_shift)
+//         	        	                flags |= KF_SHIFT;
+//         	        	        if(r_shift)
+//         	        	                flags |= KF_ALT;
+//         	        	        byte key = TranslateJoy(3, flags);
+//         	        	        byte key2 = TranslateJoy(4, flags);
+//         	        	        Handler()->OnKey(key, OpJoyKeyFlags());
+//         	        	        Handler()->OnKey(key2, OpJoyKeyFlags());
+//         	        	}
 
-				break;
+// 				break;
 
-				case 1:		// axis 1 (up-down)
-				if(e.jaxis.value < -JOY_DEADZONE)
-				{
-						// up movement
-					dword flags = KF_DOWN|OpJoyKeyFlags();
-					if(l_shift)
-						flags |= KF_SHIFT;
-					if(r_shift)
-						flags |= KF_ALT;
-					byte key = TranslateJoy(1, flags);
-					Handler()->OnKey(key, flags);
-				}
-				else if(e.jaxis.value > JOY_DEADZONE)
-				{
-						// down movement
-					dword flags = KF_DOWN|OpJoyKeyFlags();
-					if(l_shift)
-						flags |= KF_SHIFT;
-					if(r_shift)
-						flags |= KF_ALT;
-					byte key = TranslateJoy(2, flags);
-					Handler()->OnKey(key, flags);
-				} else //A-stick within deadzone (centred)
-	                	{
-        	                	dword flags = 0;
-        	                	if(l_shift)
-                	        	        flags |= KF_SHIFT;
-                	        	if(r_shift)
-                	        	        flags |= KF_ALT;
-                	        	byte key = TranslateJoy(1, flags);
-                	        	Handler()->OnKey(key, OpJoyKeyFlags());
-                	        	byte key2 = TranslateJoy(2, flags);
-                	        	Handler()->OnKey(key2, OpJoyKeyFlags());
-                		}
+// 				case 1:		// axis 1 (up-down)
+// 				if(e.jaxis.value < -JOY_DEADZONE)
+// 				{
+// 						// up movement
+// 					dword flags = KF_DOWN|OpJoyKeyFlags();
+// 					if(l_shift)
+// 						flags |= KF_SHIFT;
+// 					if(r_shift)
+// 						flags |= KF_ALT;
+// 					byte key = TranslateJoy(1, flags);
+// 					Handler()->OnKey(key, flags);
+// 				}
+// 				else if(e.jaxis.value > JOY_DEADZONE)
+// 				{
+// 						// down movement
+// 					dword flags = KF_DOWN|OpJoyKeyFlags();
+// 					if(l_shift)
+// 						flags |= KF_SHIFT;
+// 					if(r_shift)
+// 						flags |= KF_ALT;
+// 					byte key = TranslateJoy(2, flags);
+// 					Handler()->OnKey(key, flags);
+// 				} else //A-stick within deadzone (centred)
+// 	                	{
+//         	                	dword flags = 0;
+//         	                	if(l_shift)
+//                 	        	        flags |= KF_SHIFT;
+//                 	        	if(r_shift)
+//                 	        	        flags |= KF_ALT;
+//                 	        	byte key = TranslateJoy(1, flags);
+//                 	        	Handler()->OnKey(key, OpJoyKeyFlags());
+//                 	        	byte key2 = TranslateJoy(2, flags);
+//                 	        	Handler()->OnKey(key2, OpJoyKeyFlags());
+//                 		}
 
-				break;
+// 				break;
 
-				default: //invoked if A-stick exactly centred
-        	        	{
-                		        dword flags = 0;
-        	        	        if(l_shift)
-	                	                flags |= KF_SHIFT;
-                		        if(r_shift)
-                		                flags |= KF_ALT;
-					byte key = TranslateKey(e.key.keysym.sym, flags);
-					Handler()->OnKey(key, OpJoyKeyFlags());
-              			}
-				break;	
-			}
-		}
-	}
-#endif//GCWZERO
+// 				default: //invoked if A-stick exactly centred
+//         	        	{
+//                 		        dword flags = 0;
+//         	        	        if(l_shift)
+// 	                	                flags |= KF_SHIFT;
+//                 		        if(r_shift)
+//                 		                flags |= KF_ALT;
+// 					byte key = TranslateKey(e.key.keysym.sym, flags);
+// 					Handler()->OnKey(key, OpJoyKeyFlags());
+//               			}
+// 				break;	
+// 			}
+// 		}
+// 	}
+// #endif//GCWZERO
 }
 //namespace xPlatform
 

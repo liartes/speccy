@@ -224,6 +224,7 @@ void eSpeccyHandler::OnKey(char key, dword flags)
 		case 'u' : key = '7'; shift = down; break;
 		case 'd' : key = '6'; shift = down; break;
 		case 'f' : key = '0'; shift = false; break;
+		case 'e' : key = '7'; shift = down; break;
 		}
 	}
 	else if(flags&KF_QAOP)
@@ -235,6 +236,7 @@ void eSpeccyHandler::OnKey(char key, dword flags)
 		case 'u' : key = 'Q'; break;
 		case 'd' : key = 'A'; break;
 		case 'f' : key = ' '; break;
+		case 'e' : key = 'Q'; break;
 		}
 	}
 	else if(flags&KF_SINCLAIR2)
@@ -246,6 +248,7 @@ void eSpeccyHandler::OnKey(char key, dword flags)
 		case 'u' : key = '9'; break;
 		case 'd' : key = '8'; break;
 		case 'f' : key = '0'; break;
+		case 'e' : key = '9'; break;
 		}
 	}
 	speccy->Device<eKeyboard>()->OnKey(key, down, shift, ctrl, alt);
