@@ -25,8 +25,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../../tools/options.h"
 #include "../../options_common.h"
 
+#ifdef SDL_POCKETGO_KEYS
+#define DINGOO_BUTTON_R             SDLK_BACKSPACE
+#define DINGOO_BUTTON_L             SDLK_TAB
+#endif	
+
 namespace xPlatform
 {
+
+	static bool l_shift = false, r_shift = false;
 
 static bool ProcessFuncKey(SDL_Event& e)
 {
@@ -68,18 +75,29 @@ static bool ProcessFuncKey(SDL_Event& e)
 
 static byte TranslateKey(SDLKey _key, dword& _flags)
 {
+	bool ui_focused = Handler()->VideoDataUI();
 	switch(_key)
 	{
 	case SDLK_ESCAPE:	return 'm';
-	case SDLK_LSHIFT:	return 'c';
 	case SDLK_RSHIFT:	return 'c';
-	case SDLK_LALT:		return 's';
 	case SDLK_RALT:		return 's';
+#ifdef SDL_POCKETGO_KEYS
+	case SDLK_RETURN:
+		//b_start = _flags&KF_DOWN;
+		//if(b_select && b_start)
+		//	OpQuit(true);
+		return 'k';
+#else		
+	case SDLK_LSHIFT:	return 'c';
+	case SDLK_LALT:		return 's';
 	case SDLK_RETURN:	return 'e';
+#endif	
 	case SDLK_BACKQUOTE: return 'p';
-	case SDLK_BACKSPACE:
-		_flags |= KF_SHIFT;
-		return '0';
+	// case SDLK_BACKSPACE:
+	// 	_flags |= KF_SHIFT;
+	// 	return '0';
+
+
 	case SDLK_QUOTE:
 		_flags |= KF_ALT;
 		if(_flags&KF_SHIFT)
@@ -143,17 +161,68 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 		}
 		else
 			return 'L';
-	case SDLK_TAB:
-		_flags |= KF_ALT;
-		_flags |= KF_SHIFT;
-		return 0;
+	// case SDLK_TAB:
+	// 	_flags |= KF_ALT;
+	// 	_flags |= KF_SHIFT;
+	// 	return 0;
 	case SDLK_LEFT:		return 'l';
 	case SDLK_RIGHT:	return 'r';
+#ifdef SDL_POCKETGO_KEYS
+	case SDLK_SPACE:    return '1'; /*Y BUTTON*/
+	case SDLK_LCTRL:	return 'f'; /*B BUTTON */
+	case SDLK_LSHIFT:	return '2'; /*X BUTTON */
+	case SDLK_LALT:		return 'u'; /*A BUITTON*/
+
+	//case SDLK_BACKSPACE:
+	case DINGOO_BUTTON_R:
+		//redefine R as save state
+		l_shift = _flags&KF_DOWN;
+		if(!ui_focused)
+		{
+            using namespace xOptions;
+            eOptionB* o = eOptionB::Find("save state");
+            SAFE_CALL(o)->Change();
+        }
+		break;
+
+	//case SDLK_TAB:
+	case DINGOO_BUTTON_L:
+		//redefine L as load state
+		r_shift = _flags&KF_DOWN;
+		if(!ui_focused)
+        {
+            using namespace xOptions;
+            eOptionB* o = eOptionB::Find("load state");
+            SAFE_CALL(o)->Change();
+        }
+		break;
+
+#else 
+	case SDLK_LCTRL:	return 'f';
+	case SDLK_BACKSPACE:
+	 	_flags |= KF_SHIFT;
+	 	return '0';
+
+	case SDLK_TAB:
+	 	_flags |= KF_ALT;
+	 	_flags |= KF_SHIFT;
+	 	return 0;
+#endif
 	case SDLK_UP:		return 'u';
 	case SDLK_DOWN:		return 'd';
 	case SDLK_INSERT:
+#ifdef SDL_POCKETGO_KEYS
+case SDLK_RCTRL: return 'm'; /* Reset button*/ //OpQuit(true);
+#else
 	case SDLK_RCTRL:
+#endif
+/*
+	case SDLK_UP:		return 'u';
+	case SDLK_DOWN:		return 'd';
+	case SDLK_INSERT:
+	case SDLK_RCTRL:	return 'm';
 	case SDLK_LCTRL:	return 'f';
+	*/
 	default:
 		break;
 	}

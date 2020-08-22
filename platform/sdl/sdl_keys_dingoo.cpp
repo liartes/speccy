@@ -93,27 +93,27 @@ namespace xPlatform
 			l_shift = _flags&KF_DOWN;
 			if(!ui_focused)
 			{
-				#ifdef GCWZERO //redefine R as save state
+				#ifdef SDL_POCKETGO_KEYS //redefine R as save state
 	                        using namespace xOptions;
 	                        eOptionB* o = eOptionB::Find("save state");
 	                        SAFE_CALL(o)->Change();
 				#else
 				Handler()->OnAction(A_RESET);
-				#endif//GCWZERO
+				#endif//SDL_POCKETGO_KEYS
         	        }
 			break;
 		case DINGOO_BUTTON_L:
 			r_shift = _flags&KF_DOWN;
 			if(!ui_focused)
             {
-				#ifdef GCWZERO //redefine L as load state
+				#ifdef SDL_POCKETGO_KEYS //redefine L as load state
 	                        using namespace xOptions;
 	                        eOptionB* o = eOptionB::Find("load state");
 	                        SAFE_CALL(o)->Change();
 				#else
 				xOptions::eOption<int>* op_sound = xOptions::eOption<int>::Find("sound");
 				SAFE_CALL(op_sound)->Change();
-				#endif//GCWZERO
+				#endif//SDL_POCKETGO_KEYS
 	        }
 			break;
 
@@ -125,36 +125,36 @@ namespace xPlatform
 		return 0;
 	}
 
-	void ProcessKey(SDL_Event& e)
-	{
-		switch(e.type)
-		{
-			case SDL_KEYDOWN:
-			{
-				dword flags = KF_DOWN|OpJoyKeyFlags();
-				if(l_shift)
-					flags |= KF_SHIFT;
-				if(r_shift)
-					flags |= KF_ALT;
-				byte key = TranslateKey(e.key.keysym.sym, flags);
-				Handler()->OnKey(key, flags);
-			}
-			break;
-			case SDL_KEYUP:
-			{
-				dword flags = 0;
-				if(l_shift)
-					flags |= KF_SHIFT;
-				if(r_shift)
-					flags |= KF_ALT;
-				byte key = TranslateKey(e.key.keysym.sym, flags);
-				Handler()->OnKey(key, OpJoyKeyFlags());
-			}
-			break;
-			default:
-			break;
-		}
-	}
+	// void ProcessKey(SDL_Event& e)
+	// {
+	// 	switch(e.type)
+	// 	{
+	// 		case SDL_KEYDOWN:
+	// 		{
+	// 			dword flags = KF_DOWN|OpJoyKeyFlags();
+	// 			if(l_shift)
+	// 				flags |= KF_SHIFT;
+	// 			if(r_shift)
+	// 				flags |= KF_ALT;
+	// 			byte key = TranslateKey(e.key.keysym.sym, flags);
+	// 			Handler()->OnKey(key, flags);
+	// 		}
+	// 		break;
+	// 		case SDL_KEYUP:
+	// 		{
+	// 			dword flags = 0;
+	// 			if(l_shift)
+	// 				flags |= KF_SHIFT;
+	// 			if(r_shift)
+	// 				flags |= KF_ALT;
+	// 			byte key = TranslateKey(e.key.keysym.sym, flags);
+	// 			Handler()->OnKey(key, OpJoyKeyFlags());
+	// 		}
+	// 		break;
+	// 		default:
+	// 		break;
+	// 	}
+	// }
 // #ifdef GCWZERO//A-stick code, mostly ripped from the wiki ;)
 // 	void ProcessJoy(SDL_Event& e)
 // 	{

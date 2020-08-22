@@ -67,8 +67,7 @@ CXXFLAGS  = 	$(STD_OPTS) -fno-rtti -fno-threadsafe-statics \
 		-I$(SRC_PATH)/tools/libpng/ -I$(SRC_PATH)/3rdparty/tinyxml2/ \
 		-I$(SRC_PATH)/3rdparty/minizip/ \
     $(SDL_CFLAGS) \
-    	-DSDL_USE_JOYSTICK -D_LINUX -DUSE_SDL -DSDL_KEYS_DINGOO -DGCWZERO
-		#-DSDL_USE_JOYSTICK -D_LINUX -DUSE_SDL -DSDL_KEYS_COMMON -DGCWZERO -DSDL_POCKETGO_KEYS
+		-DSDL_USE_JOYSTICK -D_LINUX -DUSE_SDL -DSDL_KEYS_COMMON -DGCWZERO -DSDL_POCKETGO_KEYS
 		
 CFLAGS := $(STD_OPTS)
 #EXTRA_LDFLAGS = -lasound -Wl,--as-needed -Wl,--gc-sections -flto -s
