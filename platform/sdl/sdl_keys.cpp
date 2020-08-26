@@ -33,7 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-	static bool l_shift = false, r_shift = false;
+	static bool l_shift = false, r_shift = false, b_select = false, b_start = false;
+
 
 static bool ProcessFuncKey(SDL_Event& e)
 {
@@ -78,14 +79,19 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 	bool ui_focused = Handler()->VideoDataUI();
 	switch(_key)
 	{
-	case SDLK_ESCAPE:	return 'm';
 	case SDLK_RSHIFT:	return 'c';
 	case SDLK_RALT:		return 's';
 #ifdef SDL_POCKETGO_KEYS
-	case SDLK_RETURN:
-		//b_start = _flags&KF_DOWN;
-		//if(b_select && b_start)
-		//	OpQuit(true);
+
+	case SDLK_ESCAPE: // DINGOO_BUTTON_SELECT:
+		b_select = _flags&KF_DOWN;
+		if(b_select && b_start)
+			OpQuit(true);
+		return 'm';
+	case SDLK_RETURN: // DINGOO_BUTTON_START:
+		b_start = _flags&KF_DOWN;
+		if(b_select && b_start)
+			OpQuit(true);
 		return 'k';
 #else		
 	case SDLK_LSHIFT:	return 'c';
