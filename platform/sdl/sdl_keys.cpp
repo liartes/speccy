@@ -81,6 +81,20 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 	{
 	case SDLK_RSHIFT:	return 'c';
 	case SDLK_RALT:		return 's';
+
+#ifdef PLATFORM_TRIMUI
+
+	case SDLK_RCTRL: // DINGOO_BUTTON_SELECT:
+		b_select = _flags&KF_DOWN;
+		if(b_select && b_start)
+			OpQuit(true);
+		return 'm';
+	case SDLK_RETURN: // DINGOO_BUTTON_START:
+		b_start = _flags&KF_DOWN;
+		if(b_select && b_start)
+			OpQuit(true);
+		return 'k';
+#else
 #ifdef SDL_POCKETGO_KEYS
 
 	case SDLK_ESCAPE: // DINGOO_BUTTON_SELECT:
@@ -97,6 +111,7 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 	case SDLK_LSHIFT:	return 'c';
 	case SDLK_LALT:		return 's';
 	case SDLK_RETURN:	return 'e';
+#endif	
 #endif	
 	case SDLK_BACKQUOTE: return 'p';
 	// case SDLK_BACKSPACE:
@@ -173,6 +188,37 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 	// 	return 0;
 	case SDLK_LEFT:		return 'l';
 	case SDLK_RIGHT:	return 'r';
+#ifdef PLATFORM_TRIMUI
+	case SDLK_LALT:     return '1'; /*Y BUTTON*/
+	case SDLK_LCTRL:	return 'f'; /*B BUTTON */
+	case SDLK_LSHIFT:	return '2'; /*X BUTTON */
+	case SDLK_SPACE:	return 'u'; /*A BUITTON*/
+
+	//case SDLK_BACKSPACE:
+	case DINGOO_BUTTON_R:
+		//redefine R as save state
+		l_shift = _flags&KF_DOWN;
+		if(!ui_focused)
+		{
+            using namespace xOptions;
+            eOptionB* o = eOptionB::Find("save state");
+            SAFE_CALL(o)->Change();
+        }
+		break;
+
+	//case SDLK_TAB:
+	case DINGOO_BUTTON_L:
+		//redefine L as load state
+		r_shift = _flags&KF_DOWN;
+		if(!ui_focused)
+        {
+            using namespace xOptions;
+            eOptionB* o = eOptionB::Find("load state");
+            SAFE_CALL(o)->Change();
+        }
+		break;
+
+#else 
 #ifdef SDL_POCKETGO_KEYS
 	case SDLK_SPACE:    return '1'; /*Y BUTTON*/
 	case SDLK_LCTRL:	return 'f'; /*B BUTTON */
@@ -214,13 +260,18 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 	 	_flags |= KF_SHIFT;
 	 	return 0;
 #endif
+#endif
 	case SDLK_UP:		return 'u';
 	case SDLK_DOWN:		return 'd';
 	case SDLK_INSERT:
+#ifdef PLATFORM_TRIMUI
+case SDLK_ESCAPE: return 'm'; /* Reset button*/ //OpQuit(true);
+#else
 #ifdef SDL_POCKETGO_KEYS
 case SDLK_RCTRL: return 'm'; /* Reset button*/ //OpQuit(true);
 #else
 	case SDLK_RCTRL:
+#endif
 #endif
 /*
 	case SDLK_UP:		return 'u';

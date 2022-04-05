@@ -24,7 +24,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SDL.h>
 #include "../../tools/options.h"
 #include "../../options_common.h"
-
+#if defined(PLATFORM_TRIMUI)
+#define DINGOO_UP    SDLK_UP 
+#define DINGOO_DOWN  SDLK_DOWN 
+#define DINGOO_LEFT   SDLK_LEFT 
+#define DINGOO_RIGHT  SDLK_RIGHT
+#define DINGOO_A      SDLK_SPACE
+#define DINGOO_B      SDLK_LCTRL
+#define DINGOO_X      SDLK_LSHIFT
+#define DINGOO_Y      SDLK_LALT
+#define DINGOO_L      SDLK_TAB
+#define DINGOO_R      SDLK_BACKSPACE
+#define DINGOO_SELECT SDLK_RCTRL
+#define DINGOO_START  SDLK_RETURN
+#define DINGOO_POWER  SDLK_ESCAPE
+#else
 #define DINGOO_BUTTON_UP            SDLK_UP
 #define DINGOO_BUTTON_DOWN          SDLK_DOWN
 #define DINGOO_BUTTON_RIGHT         SDLK_RIGHT
@@ -38,6 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DINGOO_BUTTON_SELECT        SDLK_ESCAPE
 #define DINGOO_BUTTON_START         SDLK_RETURN
 #define DINGOO_BUTTON_POWER         SDLK_END
+#endif
 
 namespace xPlatform
 {

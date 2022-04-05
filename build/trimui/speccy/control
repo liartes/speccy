@@ -1,0 +1,10 @@
+Package: speccy
+Version: 
+Description: RetroGame port of Speccy
+Section: emus
+Priority: optional
+Maintainer: pingflood
+Architecture: mipsel
+Homepage: https://github.com/pingflood/speccy
+Depends:
+Source: https://github.com/pingflood/speccy
