@@ -24,6 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SDL.h>
 #include "../../tools/options.h"
 #include "../../options_common.h"
+#include "../io.h"
+
+// libmmenu
+#include <dlfcn.h>
+#include <mmenu.h>
 
 #ifdef SDL_POCKETGO_KEYS
 #define DINGOO_BUTTON_R             SDLK_BACKSPACE
@@ -33,8 +38,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-	static bool l_shift = false, r_shift = false, b_select = false, b_start = false;
+	extern SDL_Surface* screen;
+	extern SDL_Surface* offscreen;
+	extern void* mmenu;
+	extern char* rom_path;
+	static char save_path[xIo::MAX_PATH_LEN];
+	extern char SAVE_DIRECTORY[];
 
+	char* getRomPath() {
+		return rom_path;
+	}
+
+	void setRomPath(char* name) {
+		rom_path = name;
+	}
+
+	static bool l_shift = false, r_shift = false, b_select = false, b_start = false;
 
 static bool ProcessFuncKey(SDL_Event& e)
 {
@@ -59,7 +78,7 @@ static bool ProcessFuncKey(SDL_Event& e)
 	case SDLK_F5:
 		Handler()->OnAction(A_TAPE_TOGGLE);
 		return true;
-	case SDLK_F7:
+	case SDLK_RETURN:
 		{
 			using namespace xOptions;
 			eOptionB* o = eOptionB::Find("pause");
@@ -69,6 +88,51 @@ static bool ProcessFuncKey(SDL_Event& e)
 	case SDLK_F12:
 		Handler()->OnAction(A_RESET);
 		return true;
+
+	case SDLK_ESCAPE:
+
+			if (mmenu) {
+
+				char savename[512];
+				strcpy(savename, rom_path);
+				strcpy(strrchr(savename, '.'), "%i.sna");
+				snprintf(save_path, 512, "%s%s", SAVE_DIRECTORY,
+											strrchr(savename, '/') + 1);
+
+				printf("save_path : %s\r\n",save_path);
+				ShowMenu_t ShowMenu = (ShowMenu_t) dlsym(mmenu, "ShowMenu");
+
+				SDL_PauseAudio(1);
+				MenuReturnStatus status = ShowMenu(getRomPath(), save_path,
+						screen, kMenuEventKeyDown);
+
+				if (status == kStatusExitGame) {
+					SDL_LockSurface(offscreen);
+					SDL_FillRect(offscreen, NULL, 0x000000);
+					SDL_UnlockSurface(offscreen);
+					SDL_BlitSurface(offscreen, NULL, screen, NULL);
+					SDL_Flip(screen);
+					OpQuit(true);
+				} else if (status == kStatusOpenMenu) {
+					dword flags = KF_DOWN|OpJoyKeyFlags();
+					Handler()->OnKey('m', flags);
+					Handler()->OnKey('m', OpJoyKeyFlags());
+				}
+				else if (status>=kStatusLoadSlot) {
+					int slot = status - kStatusLoadSlot;
+					using namespace xOptions;
+					eOptionB* o = eOptionB::Find("load state");
+					SAFE_CALL(o)->Change(slot);
+				}
+				else if (status>=kStatusSaveSlot) {
+					int slot = status - kStatusSaveSlot;
+					using namespace xOptions;
+					eOptionB* o = eOptionB::Find("save state");
+					SAFE_CALL(o)->Change(slot);
+				}
+				SDL_PauseAudio(0);
+			}
+			return true;
 	default:
 		return false;
 	}
@@ -83,17 +147,19 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 	case SDLK_RALT:		return 's';
 
 #ifdef PLATFORM_TRIMUI
-
+/*
 	case SDLK_RCTRL: // DINGOO_BUTTON_SELECT:
 		b_select = _flags&KF_DOWN;
 		if(b_select && b_start)
 			OpQuit(true);
 		return 'm';
+
 	case SDLK_RETURN: // DINGOO_BUTTON_START:
 		b_start = _flags&KF_DOWN;
 		if(b_select && b_start)
 			OpQuit(true);
 		return 'k';
+*/
 #else
 #ifdef SDL_POCKETGO_KEYS
 
@@ -191,7 +257,7 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 #ifdef PLATFORM_TRIMUI
 	case SDLK_LALT:     return '1'; /*Y BUTTON*/
 	case SDLK_LCTRL:	return 'f'; /*B BUTTON */
-	case SDLK_LSHIFT:	return '2'; /*X BUTTON */
+	case SDLK_LSHIFT:	return 'k'; /*X BUTTON */
 	case SDLK_SPACE:	return 'u'; /*A BUITTON*/
 
 	//case SDLK_BACKSPACE:
@@ -226,6 +292,7 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 	case SDLK_LALT:		return 'u'; /*A BUITTON*/
 
 	//case SDLK_BACKSPACE:
+	/*
 	case DINGOO_BUTTON_R:
 		//redefine R as save state
 		l_shift = _flags&KF_DOWN;
@@ -248,6 +315,7 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
             SAFE_CALL(o)->Change();
         }
 		break;
+		*/
 
 #else 
 	case SDLK_LCTRL:	return 'f';
@@ -265,7 +333,7 @@ static byte TranslateKey(SDLKey _key, dword& _flags)
 	case SDLK_DOWN:		return 'd';
 	case SDLK_INSERT:
 #ifdef PLATFORM_TRIMUI
-case SDLK_ESCAPE: return 'm'; /* Reset button*/ //OpQuit(true);
+//case SDLK_ESCAPE: return 'm'; /* Reset button*/ //OpQuit(true);
 #else
 #ifdef SDL_POCKETGO_KEYS
 case SDLK_RCTRL: return 'm'; /* Reset button*/ //OpQuit(true);

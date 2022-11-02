@@ -25,14 +25,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
+extern char* rom_path;
+extern char SAVE_DIRECTORY[];
+
 struct eOptionState : public xOptions::eOptionBool
 {
 	eOptionState() { storeable = false; }
 	virtual const char*	Value() const { return NULL; }
-	const char* SnapshotName() const
+	const char* SnapshotName(int slot) const
 	{
 		static char name[xIo::MAX_PATH_LEN];
-		strcpy(name, OpLastFile());
+		static char toReturn[512];
+		strcpy(name, rom_path);
 		int l = strlen(name);
 		if(!l || name[l - 1] == '/' || name[l - 1] == '\\')
 			return NULL;
@@ -42,17 +46,26 @@ struct eOptionState : public xOptions::eOptionBool
 		if(*e != '.')
 			return NULL;
 		*e = '\0';
+		char str_slot[2];
+		sprintf(str_slot,"%d",slot);
+		strcat(name, str_slot);
 		strcat(name, ".sna");
-		return name;
+
+		snprintf(toReturn, 512, "%s%s", SAVE_DIRECTORY,
+				strrchr(name, '/') + 1);
+
+		printf("snapshotName : %s\r\n", toReturn);
+		fflush(stdout);
+		return toReturn;
 	}
 };
 
 static struct eOptionSaveState : public eOptionState
 {
 	virtual const char* Name() const { return "save state"; }
-	virtual void Change(bool next = true)
+	virtual void Change(int slot, bool next = true)
 	{
-		const char* name = SnapshotName();
+		const char* name = SnapshotName(slot);
 		if(name)
 			Set(Handler()->OnSaveFile(name));
 		else
@@ -64,9 +77,9 @@ static struct eOptionSaveState : public eOptionState
 static struct eOptionLoadState : public eOptionState
 {
 	virtual const char* Name() const { return "load state"; }
-	virtual void Change(bool next = true)
+	virtual void Change(int slot, bool next = true)
 	{
-		const char* name = SnapshotName();
+		const char* name = SnapshotName(slot);
 		if(name)
 			Set(Handler()->OnOpenFile(name));
 		else

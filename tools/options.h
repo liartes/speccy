@@ -41,6 +41,7 @@ public:
 	virtual void Value(const char* v) {}
 	virtual const char** Values() const { return NULL; }
 	virtual void Change(bool next = true) {}
+	virtual void Change(int slot, bool next = true) {}
 	virtual void Apply() {}
 
 	static eOptionB* Find(const char* name);

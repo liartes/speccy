@@ -1,5 +1,5 @@
-FLAVOR := release
-# FLAVOR := debug
+#FLAVOR := release
+FLAVOR := debug
 #DEVICE := a320
 DEVICE := trimui
 
@@ -10,7 +10,7 @@ DEVICE := trimui
 #CROSS_COMPILE=$(CHAINPREFIX)/bin/arm-linux-
 
 CHAINPREFIX=/opt/trimui-toolchain
-CROSS_COMPILE=$(CHAINPREFIX)/usr/bin/arm-buildroot-linux-gnueabi-
+CROSS_COMPILE=$(CHAINPREFIX)/bin/arm-buildroot-linux-gnueabi-
 
 CC = $(CROSS_COMPILE)gcc
 CXX = $(CROSS_COMPILE)g++
@@ -74,7 +74,7 @@ CFLAGS := $(STD_OPTS)
 #matholton changed this
 #LFLAGS := $(SDL_LIBS) -s -lz -lSDL -lpng $(EXTRA_LDFLAGS)
 #then changed it back
-LFLAGS := $(SDL_LIBS) -s -lz -lSDL -lpng 
+LFLAGS := $(SDL_LIBS) -s -lz -lSDL -lpng -lSDL_image -lSDL_ttf -ldl
 # LFLAGS := $(SDL_LIBS) -lz -lSDL -lpng 
 
 all: build

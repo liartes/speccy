@@ -21,13 +21,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_SDL
 
 #include <SDL.h>
+#include "../../tools/options.h"
 #include "../../options_common.h"
 #include "../../tools/tick.h"
+// libmmenu
+#include <dlfcn.h>
+#include <mmenu.h>
 
 namespace xPlatform
 {
 
 static bool sdl_inited = false;
+static SDL_Surface* screen = NULL;
+static SDL_Surface* offscreen = NULL;
+void* mmenu;
+char* rom_path;
+char SAVE_DIRECTORY[] = "/mnt/SDCARD/Roms/ZXSpectrum/.saves/";
+
+void* getMmenu() {
+	return mmenu;
+}
+
+void* setMmenu(void* toSet) {
+	mmenu = toSet;
+}
+void setRomPath(char* name);
+
+char* getRomPath();
 
 bool InitVideo();
 bool InitAudio();
@@ -125,13 +145,15 @@ static void Loop()
 			}
 		}
 		Handler()->OnLoop();
-		UpdateScreen();
-		UpdateAudio();
-		while(last_tick.Passed().Ms() < 15)
-		{
-			SDL_Delay(3);
+		if(!OpQuit()) {
+			UpdateScreen();
+			UpdateAudio();
+			while(last_tick.Passed().Ms() < 15)
+			{
+				SDL_Delay(3);
+			}
+			last_tick.SetCurrent();
 		}
-		last_tick.SetCurrent();
 		if(OpQuit())
 			quit = true;
 	}
@@ -147,8 +169,25 @@ int main(int argc, char* argv[])
 		xPlatform::Done();
 		return -1;
 	}
-	if(argc > 1)
+	if(argc > 1) {
+		xPlatform::setRomPath(argv[1]);
 		xPlatform::Handler()->OnOpenFile(argv[1]);
+	}
+
+	if(xPlatform::getMmenu() == NULL) {
+		xPlatform::setMmenu(dlopen("libmmenu.so", RTLD_LAZY));
+
+			    int resume_slot = -1;
+			    ResumeSlot_t ResumeSlot = (ResumeSlot_t)dlsym(xPlatform::getMmenu(), "ResumeSlot");
+			    if (ResumeSlot) resume_slot = ResumeSlot();
+
+			    if (resume_slot!=-1) {
+			    	using namespace xOptions;
+			    	eOptionB* o = eOptionB::Find("load state");
+			    	SAFE_CALL(o)->Change(resume_slot);
+			    }
+	}
+
 	xPlatform::Loop();
 	xPlatform::Done();
 	return 0;

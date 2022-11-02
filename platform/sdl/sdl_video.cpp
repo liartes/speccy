@@ -33,8 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace xPlatform
 {
 
-static SDL_Surface* screen = NULL;
-static SDL_Surface* offscreen = NULL;
+extern SDL_Surface* screen = NULL;
+extern SDL_Surface* offscreen = NULL;
 
 static struct eCachedColors
 {
